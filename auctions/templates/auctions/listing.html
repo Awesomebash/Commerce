@@ -1,0 +1,12 @@
+{% extends "auctions/layout.html" %}
+{% load static %} 
+
+{% block body %}
+    <div>
+        <h2>{{listing.title}}</h2>
+        <p>{{listing.description}}</p>
+        <h3>{{listing.category.categoryTitle}}</h3>
+        <h3>{{listing.user.username}}</h3>
+        <img src="{% static 'auctions/'|add:listing.image.name %}" alt="My image" style="width: 100px; max-width: 600px;;">
+    </div>
+{% endblock %}

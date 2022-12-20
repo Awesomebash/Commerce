@@ -18,6 +18,7 @@ class Listing(models.Model):
     category = models.ForeignKey(Category, on_delete=models.PROTECT, related_name="categoriesListings")
     user = models.ForeignKey(User, on_delete=models.PROTECT, related_name="userListings")
     active = models.BooleanField()
+    watcher = models.ManyToManyField(User, blank=True, related_name="watching")
 
     def __str__(self) -> str:
         return f"{self.id}: {self.title}"
@@ -36,10 +37,3 @@ class Comment(models.Model):
     
     def __str__(self) -> str:
         return f"{self.id}: {self.commentUser.username}"
-
-class Watchlist(models.Model):
-    watchItem = models.ForeignKey(Listing, on_delete=models.PROTECT, related_name="watchListItem")
-    watchUser = models.ForeignKey(User, on_delete=models.PROTECT, related_name="watchListUser")
-    
-    def __str__(self) -> str:
-        return f"{self.watchUser.username}: {self.watchItem.title}"

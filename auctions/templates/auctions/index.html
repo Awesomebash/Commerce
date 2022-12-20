@@ -7,7 +7,7 @@
         {% for listing in listings %}
         <div>
             <li style="background-color: grey; margin: 2%;">
-                <h2>{{listing.title}}</h2>
+                <h2><a href="{% url 'listing' title=listing.title %}">{{listing.title}}</a></h2>
                 <p>{{listing.description}}</p>
                 <h3>{{listing.category.categoryTitle}}</h3>
                 <h3>{{listing.user.username}}</h3>

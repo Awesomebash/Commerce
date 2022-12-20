@@ -28,18 +28,26 @@ def index(request):
         })
 
 def listing(request, title):
-    return render(request, "auctions/error.html")
+    try:
+        localListingObject = Listing.objects.get(active=True, title__icontains=title)
+    except:
+        return render(request, "auctions/error.html") 
+    return render(request, "auctions/listing.html", {
+        'listing': localListingObject
+    })
 
 @login_required(login_url="/login")
 def watchlist(request):
     return render(request, "auctions/error.html")
 
-@login_required
+@login_required(login_url="/login")
 def create(request):
     if request.method == "POST":
         form = ListingForm(request.POST,  request.FILES)
         if not form.is_valid():
-            return redirect('index')
+            return render(request, "auctions/error.html")
+        if request.POST["title"] in Listing.objects.values_list('title', flat=True):
+            return render(request, "auctions/error.html")
         obj = form.save(commit=False)
         obj.user = request.user
         obj.active = True
