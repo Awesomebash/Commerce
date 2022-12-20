@@ -14,10 +14,10 @@ class Category(models.Model):
 class Listing(models.Model):
     title = models.CharField(max_length=64)
     description = models.CharField(max_length=1000)
-    image = models.ImageField()
+    image = models.ImageField(null=True, blank=True)
     category = models.ForeignKey(Category, on_delete=models.PROTECT, related_name="categoriesListings")
     user = models.ForeignKey(User, on_delete=models.PROTECT, related_name="userListings")
-    active = models.BinaryField()
+    active = models.BooleanField()
 
     def __str__(self) -> str:
         return f"{self.id}: {self.title}"
