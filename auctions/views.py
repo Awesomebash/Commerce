@@ -15,18 +15,16 @@ class ListingForm(forms.ModelForm):
         fields = ['title', 'description', 'image', 'category']
 
 def index(request):
-    print(Listing.objects.values_list())
     if request.method == "POST":
         if not request.POST["category"] in Category.objects.values_list('categoryTitle', flat=True):
             return render(request, "auctions/error.html")
         else:
             return render(request, "auctions/index.html", {
-                'listings': Listing.objects.values_list(flat=True)
+                'listings': Listing.objects.filter(active=True, category_id=Category.objects.get(categoryTitle=request.POST["category"]))
             })
     else:
         return render(request, "auctions/index.html", {
-            'listings': Listing.objects.filter(active=True),
-            'categories': Category.objects.values()
+            'listings': Listing.objects.filter(active=True)
         })
 
 def listing(request, title):
