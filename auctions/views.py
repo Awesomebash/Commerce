@@ -25,7 +25,8 @@ def index(request):
             })
     else:
         return render(request, "auctions/index.html", {
-            'listings': Listing.objects.values()
+            'listings': Listing.objects.filter(active=True),
+            'categories': Category.objects.values()
         })
 
 def listing(request, title):

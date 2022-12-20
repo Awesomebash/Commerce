@@ -1,9 +1,19 @@
 {% extends "auctions/layout.html" %}
+{% load static %} 
 
 {% block body %}
     <h2>Active Listings</h2>
-    {% for listing in listings %}
-        {{listing}}
-    {% endfor %}
-    TODO
+    <ul>
+        {% for listing in listings %}
+        <div>
+            <li style="background-color: grey; margin: 2%;">
+                <h2>{{listing.title}}</h2>
+                <p>{{listing.description}}</p>
+                <h3>{{listing.category.categoryTitle}}</h3>
+                <h3>{{listing.user.username}}</h3>
+                <img src="{% static 'auctions/'|add:listing.image.name %}" alt="My image" style="width: 100px; max-width: 600px;;">
+            </li>  
+        </div>
+        {% endfor %}
+    </ul>
 {% endblock %}
