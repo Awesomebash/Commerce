@@ -8,11 +8,22 @@ from django import forms
 from django.contrib.auth.models import User
 from .models import *
 
+#TODO: Bid system
+
+
 class ListingForm(forms.ModelForm):
     image = forms.ImageField(required = False)
     class Meta:
         model = Listing
         fields = ['title', 'description', 'image', 'category']
+
+class BidForm(forms.ModelForm):
+    class Meta:
+        model = Bid
+        fields = ['price']
+
+class WatchlistForm(forms.Form):
+    wishlist = forms.BooleanField(required=False)
 
 def index(request):
     if request.method == "POST":
@@ -28,17 +39,41 @@ def index(request):
         })
 
 def listing(request, title):
-    try:
-        localListingObject = Listing.objects.get(active=True, title__icontains=title)
-    except:
-        return render(request, "auctions/error.html") 
-    return render(request, "auctions/listing.html", {
-        'listing': localListingObject
-    })
+    if request.method == "POST":
+        return render(request, "auctions/error.html")
+    else:
+        try:
+            localListingObject = Listing.objects.get(active=True, title__icontains=title)
+        except:
+            return render(request, "auctions/error.html") 
+        print(Listing.objects.values_list('watcher', flat=True))
+        print(request.user)
+        userWishlist = request.user.id in Listing.objects.values_list('watcher', flat=True)
+        userWishlist = request.user.id != None
+        return render(request, "auctions/listing.html", {
+            'listing': localListingObject,
+            'bidForm': BidForm(),
+            'watchlistForm': WatchlistForm(initial={
+                'wishlist': userWishlist
+            })
+        })
 
 @login_required(login_url="/login")
 def watchlist(request):
-    return render(request, "auctions/error.html")
+    if request.method == "POST":
+        form = WatchlistForm(request.POST)
+        if not form.is_valid():
+            return render(request, "auctions/error.html")
+        listing = Listing.objects.get(id=request.POST["listing"])
+        if form.cleaned_data["wishlist"]:
+            listing.watcher.add(request.user)
+        else:
+            listing.watcher.remove(request.user)
+        return redirect('index')
+    else:
+        return render(request, "auctions/index.html", {
+            'listings': Listing.objects.filter(active=True, watcher=request.user)
+        })
 
 @login_required(login_url="/login")
 def create(request):

@@ -8,5 +8,12 @@
         <h3>{{listing.category.categoryTitle}}</h3>
         <h3>{{listing.user.username}}</h3>
         <img src="{% static 'auctions/'|add:listing.image.name %}" alt="My image" style="width: 100px; max-width: 600px;;">
+        {{bidForm}}
+        <form action="{% url 'watchlist' %}" method="post">
+            {% csrf_token %}
+            {{watchlistForm}}
+            <input type="hidden" value="{{listing.id}}" name="listing">
+            <input type="submit">
+        </form>
     </div>
 {% endblock %}
