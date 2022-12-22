@@ -8,11 +8,33 @@
         <h3>{{listing.category.categoryTitle}}</h3>
         <h3>{{listing.user.username}}</h3>
         <img src="{% static 'auctions/'|add:listing.image.name %}" alt="My image" style="width: 100px; max-width: 600px;;">
-        {{bidForm}}
+        New Bid:
+        <form action="{% url 'listing' title=listing.title%}" method="post">
+            {% csrf_token %}
+            {{bidForm}}
+            <input type="submit">
+        </form>
+        Add to Wishlist:
         <form action="{% url 'watchlist' %}" method="post">
             {% csrf_token %}
             {{watchlistForm}}
             <input type="hidden" value="{{listing.id}}" name="listing">
+            <input type="submit">
+        </form>
+        <ul>
+            {% for comment in comments %}
+            <div>
+                <li style="background-color: grey; margin: 2%;">
+                    <h3>{{comment.commentUser.username}}</h3>
+                    <p>{{comment.commentText}}</p>
+                </li>
+            </div>
+            {% endfor %}
+        </ul>
+        Comment Form:
+        <form action="{% url 'listing' title=listing.title%}" method="post">
+            {% csrf_token %}
+            {{commentForm}}
             <input type="submit">
         </form>
     </div>

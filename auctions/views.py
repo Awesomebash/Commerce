@@ -25,6 +25,11 @@ class BidForm(forms.ModelForm):
 class WatchlistForm(forms.Form):
     wishlist = forms.BooleanField(required=False)
 
+class CommentForm(forms.ModelForm):
+    class Meta:
+        model = Comment
+        fields = ['commentText']
+
 def index(request):
     if request.method == "POST":
         if not request.POST["category"] in Category.objects.values_list('categoryTitle', flat=True):
@@ -39,23 +44,37 @@ def index(request):
         })
 
 def listing(request, title):
+    try:
+        localListingObject = Listing.objects.get(active=True, title__icontains=title)
+    except:
+        return render(request, "auctions/error.html") 
     if request.method == "POST":
-        return render(request, "auctions/error.html")
-    else:
-        try:
-            localListingObject = Listing.objects.get(active=True, title__icontains=title)
-        except:
+        if not request.user.is_authenticated:
             return render(request, "auctions/error.html") 
-        print(Listing.objects.values_list('watcher', flat=True))
-        print(request.user)
+        print(request.POST)
+        form = CommentForm(request.POST)
+        if not form.is_valid():
+            form = BidForm(request.POST)
+            if not form.is_valid():
+                return render(request, "auctions/error.html")
+            obj = form.save(commit=False)
+            obj.bidsListing = localListingObject
+            obj.save()
+            return redirect('index')
+        obj = form.save(commit=False)
+        obj.commentListing = localListingObject
+        obj.commentUser = request.user
+        obj.save()
+        return redirect('index')
+    else:
         userWishlist = request.user.id in Listing.objects.values_list('watcher', flat=True)
         userWishlist = request.user.id != None
         return render(request, "auctions/listing.html", {
             'listing': localListingObject,
             'bidForm': BidForm(),
-            'watchlistForm': WatchlistForm(initial={
-                'wishlist': userWishlist
-            })
+            'watchlistForm': WatchlistForm(initial={'wishlist': userWishlist}),
+            'comments': Comment.objects.filter(commentListing=localListingObject),
+            'commentForm': CommentForm()
         })
 
 @login_required(login_url="/login")
