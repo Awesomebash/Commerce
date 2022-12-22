@@ -7,11 +7,13 @@
         {% for listing in listings %}
         <div>
             <li style="background-color: grey; margin: 2%;">
-                <h2><a href="{% url 'listing' title=listing.title %}">{{listing.title}}</a></h2>
+                <h2><a href="{% url 'listing' title=listing.id %}">{{listing.title}}</a></h2>
                 <p>{{listing.description}}</p>
                 <h3>{{listing.category.categoryTitle}}</h3>
                 <h3>{{listing.user.username}}</h3>
-                <img src="{% static 'auctions/'|add:listing.image.name %}" alt="My image" style="width: 100px; max-width: 600px;;">
+                {% if not listing.image.name == "" %}
+                    <img src="{% static 'auctions/'|add:listing.image.name %}" alt="My image" style="width: 100px; max-width: 600px;;">
+                {% endif %}
             </li>  
         </div>
         {% endfor %}

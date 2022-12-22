@@ -1,0 +1,35 @@
+{% extends "auctions/layout.html" %}
+{% load static %} 
+
+{% block body %}
+    <div>
+        <h1>Auction Closed</h1>
+        <h2>{{listing.title}}</h2>
+        <p>{{listing.description}}</p>
+        <h3>{{listing.category.categoryTitle}}</h3>
+        <h3>{{listing.user.username}}</h3>
+        {% if not listing.image.name == "" %}
+            <img src="{% static 'auctions/'|add:listing.image.name %}" alt="My image" style="width: 100px; max-width: 600px;;">
+        {% endif %}
+        <h3>Winning Bid</h3>
+        <ul>
+            <div>
+                <li style="background-color: grey; margin: 2%;">
+                    <h3>{{bids.bidUser.username}}</h3>
+                    <p>{{bids.price}}</p>
+                </li>
+            </div>
+        </ul>
+        <ul>
+            <h3>Comments:</h3>
+            {% for comment in comments %}
+            <div>
+                <li style="background-color: grey; margin: 2%;">
+                    <h3>{{comment.commentUser.username}}</h3>
+                    <p>{{comment.commentText}}</p>
+                </li>
+            </div>
+            {% endfor %}
+        </ul>
+    </div>
+{% endblock %}

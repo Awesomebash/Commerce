@@ -7,13 +7,28 @@
         <p>{{listing.description}}</p>
         <h3>{{listing.category.categoryTitle}}</h3>
         <h3>{{listing.user.username}}</h3>
-        <img src="{% static 'auctions/'|add:listing.image.name %}" alt="My image" style="width: 100px; max-width: 600px;;">
-        New Bid:
-        <form action="{% url 'listing' title=listing.title%}" method="post">
-            {% csrf_token %}
-            {{bidForm}}
-            <input type="submit">
-        </form>
+        {% if not listing.image.name == "" %}
+            <img src="{% static 'auctions/'|add:listing.image.name %}" alt="My image" style="width: 100px; max-width: 600px;;">
+        {% endif %}
+        <h3>Current Bids:</h3>
+        <ul>
+            {% for bid in bids %}
+            <div>
+                <li style="background-color: grey; margin: 2%;">
+                    <h3>{{bid.bidUser.username}}</h3>
+                    <p>{{bid.price}}</p>
+                </li>
+            </div>
+            {% endfor %}
+        </ul>
+        {% if not user == listing.user %}
+            New Bid:
+            <form action="{% url 'listing' title=listing.id%}" method="post">
+                {% csrf_token %}
+                {{bidForm}}
+                <input type="submit">
+            </form>
+        {% endif %}
         Add to Wishlist:
         <form action="{% url 'watchlist' %}" method="post">
             {% csrf_token %}
@@ -21,6 +36,13 @@
             <input type="hidden" value="{{listing.id}}" name="listing">
             <input type="submit">
         </form>
+        {% if user == listing.user %}
+            Close Bid:
+            <form action="{% url 'delist' title=listing.id%}" method="post">
+                {% csrf_token %}
+                <input type="submit">
+            </form>
+        {% endif %}
         <ul>
             {% for comment in comments %}
             <div>
@@ -32,7 +54,7 @@
             {% endfor %}
         </ul>
         Comment Form:
-        <form action="{% url 'listing' title=listing.title%}" method="post">
+        <form action="{% url 'listing' title=listing.id%}" method="post">
             {% csrf_token %}
             {{commentForm}}
             <input type="submit">

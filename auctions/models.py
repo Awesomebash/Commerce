@@ -26,6 +26,7 @@ class Listing(models.Model):
 class Bid(models.Model):
     price = models.IntegerField()
     bidsListing = models.ForeignKey(Listing, on_delete=models.PROTECT, related_name="listingsBids")
+    bidUser = models.ForeignKey(User, on_delete=models.PROTECT, related_name="userBid")
 
     def __str__(self) -> str:
         return f"{self.id}: {self.price}"
